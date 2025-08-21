@@ -20,3 +20,15 @@ spring:
         format_sql: true
 
     open-in-view: false # 성능 측면에서 false로 설정
+
+# JWT Configuration
+jwt:
+  secret-key: ENC(9hJ5k3L8m2N4p7Q1r6T9v5X8z3C6f2G9h5K8l3M6n9P2q7R4t9V5x8Z1c6F9g3H6)
+  access-token-validity: 3600000  # 1 hour in milliseconds
+  refresh-token-validity: 604800000  # 7 days in milliseconds
+
+# External API Configuration
+external-api:
+  fin-open-api:
+    base-url: https://finopenapi.ssafy.io/ssafy/api/v1
+    manager-id: ssafy@ssafy.co.kr
