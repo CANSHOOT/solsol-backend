@@ -1,3 +1,22 @@
 server:
   servlet:
     context-path: /api
+
+
+spring:
+  datasource:
+    password: ENC(UENUlWqBNf2EwH9wY4AUbIuOfFj8g1fE)
+    username: ENC(nNpYuEyJwrtcc1wH9d1+cg==)
+    url: ENC(GWkhJ1en1NhxsoQebNW1ZpyBRPNi/8/TxK0BWolj87MnPpPuORVBc4n9++XD4adt)
+
+
+  jpa:
+    hibernate:
+      ddl-auto: none # 외래키 설정 없이 직접 테이블을 생성하기 위해서
+
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+    open-in-view: false # 성능 측면에서 false로 설정
