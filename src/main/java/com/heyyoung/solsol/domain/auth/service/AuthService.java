@@ -6,7 +6,6 @@ import com.heyyoung.solsol.domain.department.entity.Department;
 import com.heyyoung.solsol.domain.department.repository.DepartmentRepository;
 import com.heyyoung.solsol.domain.user.entity.User;
 import com.heyyoung.solsol.domain.user.repository.UserRepository;
-import com.heyyoung.solsol.external.dto.ApiKeyReissueResponse;
 import com.heyyoung.solsol.external.dto.UserCreateResponse;
 import com.heyyoung.solsol.external.service.FinOpenApiService;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +31,9 @@ public class AuthService {
     /**
      * 회원가입 처리
      * 1. 학번 중복 검사
-     * 2. 외부 API로 API 키 재발급
-     * 3. 외부 API로 사용자 계정 생성
-     * 4. 내부 DB에 사용자 정보 저장
-     * 5. JWT 토큰 생성 및 반환
+     * 2. 외부 API로 사용자 계정 생성 (전역 API Key 사용)
+     * 3. 내부 DB에 사용자 정보 저장
+     * 4. JWT 토큰 생성 및 반환
      */
     public AuthResponse signup(SignupRequest request) {
         // 1. 학번 중복 체크
@@ -43,27 +41,20 @@ public class AuthService {
             throw new IllegalArgumentException("이미 존재하는 학번입니다.");
         }
 
-        // 2. API Key 재발급
-        ApiKeyReissueResponse apiKeyResponse = finOpenApiService.reissueApiKey(request.getEmail());
-        if (apiKeyResponse == null || apiKeyResponse.getApiKey() == null) {
-            throw new RuntimeException("API Key 재발급에 실패했습니다.");
-        }
-
-        // 3. 외부 API로 사용자 계정 생성
-        UserCreateResponse userCreateResponse = finOpenApiService.createUser(
-                apiKeyResponse.getApiKey(), request.getEmail());
+        // 2. 외부 API로 사용자 계정 생성 (전역 API Key 사용)
+        UserCreateResponse userCreateResponse = finOpenApiService.createUser(request.getEmail());
         if (userCreateResponse == null) {
             throw new RuntimeException("사용자 계정 생성에 실패했습니다.");
         }
 
-        // 4. Department 조회
+        // 3. Department 조회
         Department department = null;
         if (request.getDepartmentId() != null) {
             department = departmentRepository.findById(request.getDepartmentId())
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학과입니다."));
         }
 
-        // 5. User 엔티티 생성 및 저장
+        // 4. User 엔티티 생성 및 저장
         User user = User.builder()
                 .userId(request.getEmail())
                 .userKey(userCreateResponse.getUserKey())
@@ -76,7 +67,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        // 6. JWT 토큰 생성
+        // 5. JWT 토큰 생성
         String accessToken = jwtUtil.generateAccessToken(user.getUserId(), user.getUserKey());
         String refreshToken = jwtUtil.generateRefreshToken(user.getUserId());
 

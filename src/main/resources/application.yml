@@ -31,3 +31,5 @@ jwt:
 external-api:
   fin-open-api:
     base-url: ENC(jyd0oIRto8TB/ChjnaO8yMh8CbEPwGJJzu88ylZ3rHDe4PQyqVrYqBCJWfBUgUs1vO1PYIh4III=)
+    manager-id: ENC(0611Ehk2QDVeUm3AwR90KW3CrEElmNXXzOOc28Nt3V0=)
+    api-key: ENC(3nfkrNjTmBLzMMTwqqwKMY2bJPdZwfER2GbqamGFkvHHgzlxNaUPSjjWLBl1FRKs)
