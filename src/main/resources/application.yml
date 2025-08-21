@@ -23,12 +23,11 @@ spring:
 
 # JWT Configuration
 jwt:
-  secret-key: ENC(9hJ5k3L8m2N4p7Q1r6T9v5X8z3C6f2G9h5K8l3M6n9P2q7R4t9V5x8Z1c6F9g3H6)
+  secret-key: ENC(2u+ddwf5mG2f4XfQCjRpgjGb9IbYb4HxCX1d74eHCUVTgLjbdw3Hi/5Q8HIn/6tFwyU0tPh5TRg=)
   access-token-validity: 3600000  # 1 hour in milliseconds
   refresh-token-validity: 604800000  # 7 days in milliseconds
 
 # External API Configuration
 external-api:
   fin-open-api:
-    base-url: https://finopenapi.ssafy.io/ssafy/api/v1
-    manager-id: ssafy@ssafy.co.kr
+    base-url: ENC(jyd0oIRto8TB/ChjnaO8yMh8CbEPwGJJzu88ylZ3rHDe4PQyqVrYqBCJWfBUgUs1vO1PYIh4III=)

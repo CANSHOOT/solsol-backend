@@ -11,6 +11,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * 학과 엔티티
+ * 학과 정보와 제휴 할인 정보를 포함
+ */
 @Entity
 @Table(name = "departments")
 @Getter

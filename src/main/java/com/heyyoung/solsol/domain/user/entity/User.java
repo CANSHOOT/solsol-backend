@@ -12,6 +12,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+/**
+ * 사용자 엔티티
+ * 학생 정보와 학생회 관련 정보를 포함
+ * Soft Delete 방식으로 탈퇴 처리
+ */
 @Entity
 @Table(name = "users", indexes = {
     @Index(name = "idx_users_council_role", columnList = "council_id, is_council_officer")
@@ -67,10 +72,18 @@ public class User {
         this.isCouncilOfficer = isCouncilOfficer != null ? isCouncilOfficer : false;
     }
 
+    /**
+     * 사용자 탈퇴 여부 확인
+     * @return 탈퇴된 사용자면 true
+     */
     public boolean isDeleted() {
         return deletedAt != null;
     }
 
+    /**
+     * 사용자 탈퇴 처리 (Soft Delete)
+     * deletedAt 필드에 현재 시간을 설정
+     */
     public void delete() {
         this.deletedAt = LocalDateTime.now();
     }

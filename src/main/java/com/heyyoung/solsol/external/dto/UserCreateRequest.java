@@ -7,5 +7,5 @@ import lombok.Getter;
 @Builder
 public class UserCreateRequest {
     private String apiKey;
-    private String userld;
+    private String userId;
 }

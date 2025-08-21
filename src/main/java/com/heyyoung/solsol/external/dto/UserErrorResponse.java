@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ApiKeyReissueResponse {
-    private String managerId;
-    private String apiKey;
+public class UserErrorResponse {
+    private String responseCode;
+    private String responseMessage;
 }
