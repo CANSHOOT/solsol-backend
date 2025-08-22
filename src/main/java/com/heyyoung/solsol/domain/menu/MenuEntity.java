@@ -1,7 +1,7 @@
 package com.heyyoung.solsol.domain.menu;
 
 import com.heyyoung.solsol.common.entity.BaseSoftDeleteCreatedEntity;
-import com.heyyoung.solsol.merchant.MerchantEntity;
+import com.heyyoung.solsol.domain.merchant.MerchantEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 public class MenuEntity extends BaseSoftDeleteCreatedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int menuId;
+    private long menuId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "merchant_id")
