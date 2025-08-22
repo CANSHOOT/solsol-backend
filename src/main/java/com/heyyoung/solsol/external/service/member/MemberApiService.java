@@ -1,12 +1,12 @@
-package com.heyyoung.solsol.external.service;
+package com.heyyoung.solsol.external.service.member;
 
-import com.heyyoung.solsol.external.dto.*;
+import com.heyyoung.solsol.external.dto.member.UserCreateRequest;
+import com.heyyoung.solsol.external.dto.member.UserCreateResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 /**
  * 금융망 외부 API 호출을 담당하는 서맄스
@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class FinOpenApiService {
+public class MemberApiService {
 
     private final WebClient webClient;
 
