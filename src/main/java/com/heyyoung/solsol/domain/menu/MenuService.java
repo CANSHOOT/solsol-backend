@@ -1,6 +1,6 @@
-package com.heyyoung.solsol.menu;
+package com.heyyoung.solsol.domain.menu;
 
-import com.heyyoung.solsol.menu.dto.GetMenuResponse;
+import com.heyyoung.solsol.domain.menu.dto.GetMenuResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

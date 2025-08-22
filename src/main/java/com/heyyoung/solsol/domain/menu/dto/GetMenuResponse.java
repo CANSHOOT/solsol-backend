@@ -1,6 +1,6 @@
-package com.heyyoung.solsol.menu.dto;
+package com.heyyoung.solsol.domain.menu.dto;
 
-import com.heyyoung.solsol.menu.MenuEntity;
+import com.heyyoung.solsol.domain.menu.MenuEntity;
 
 import java.math.BigDecimal;
 

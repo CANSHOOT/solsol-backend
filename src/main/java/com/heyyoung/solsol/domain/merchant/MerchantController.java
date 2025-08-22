@@ -1,6 +1,6 @@
-package com.heyyoung.solsol.merchant;
+package com.heyyoung.solsol.domain.merchant;
 
-import com.heyyoung.solsol.merchant.dto.GetMenusResponse;
+import com.heyyoung.solsol.domain.merchant.dto.GetMenusResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

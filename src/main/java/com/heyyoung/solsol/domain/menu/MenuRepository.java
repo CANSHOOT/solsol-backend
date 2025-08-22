@@ -1,4 +1,4 @@
-package com.heyyoung.solsol.menu;
+package com.heyyoung.solsol.domain.menu;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

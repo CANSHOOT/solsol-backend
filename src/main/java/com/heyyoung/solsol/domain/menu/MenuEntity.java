@@ -1,4 +1,4 @@
-package com.heyyoung.solsol.menu;
+package com.heyyoung.solsol.domain.menu;
 
 import com.heyyoung.solsol.common.entity.BaseSoftDeleteCreatedEntity;
 import com.heyyoung.solsol.merchant.MerchantEntity;
