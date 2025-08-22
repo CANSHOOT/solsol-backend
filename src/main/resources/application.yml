@@ -20,3 +20,16 @@ spring:
         format_sql: true
 
     open-in-view: false # 성능 측면에서 false로 설정
+
+# JWT Configuration
+jwt:
+  secret-key: ENC(2u+ddwf5mG2f4XfQCjRpgjGb9IbYb4HxCX1d74eHCUVTgLjbdw3Hi/5Q8HIn/6tFwyU0tPh5TRg=)
+  access-token-validity: 3600000  # 1 hour in milliseconds
+  refresh-token-validity: 604800000  # 7 days in milliseconds
+
+# External API Configuration
+external-api:
+  fin-open-api:
+    base-url: ENC(jyd0oIRto8TB/ChjnaO8yMh8CbEPwGJJzu88ylZ3rHDe4PQyqVrYqBCJWfBUgUs1vO1PYIh4III=)
+    manager-id: ENC(0611Ehk2QDVeUm3AwR90KW3CrEElmNXXzOOc28Nt3V0=)
+    api-key: ENC(3nfkrNjTmBLzMMTwqqwKMY2bJPdZwfER2GbqamGFkvHHgzlxNaUPSjjWLBl1FRKs)
