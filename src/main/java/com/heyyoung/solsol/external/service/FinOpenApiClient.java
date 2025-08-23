@@ -7,6 +7,7 @@ import com.heyyoung.solsol.external.exception.FinOpenApiErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -22,13 +23,23 @@ public class FinOpenApiClient {
     @Qualifier("finOpenApiWebClient")
     private final WebClient webClient;
     private final ExternalApiProperties properties;
+    
+    @Value("${external-api.fin-open-api.base-url}")
+    private String baseUrl;
 
     /**
-     * POST 요청
+     * POST 요청 처리
+     * @param uri 요청할 API 경로
+     * @param request 요청 본문 객체
+     * @param responseType 응답 타입 클래스
+     * @return API 응답 객체
      */
     public <T, R> R post(String uri, T request, Class<R> responseType) {
-        return webClient.post()
-                .uri(uri)
+        String fullUrl = baseUrl + uri;
+        
+        return WebClient.create()
+                .post()
+                .uri(fullUrl)
                 .bodyValue(request)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, response -> {
@@ -45,11 +56,17 @@ public class FinOpenApiClient {
     }
 
     /**
-     * GET 요청
+     * GET 요청 처리
+     * @param uri 요청할 API 경로
+     * @param responseType 응답 타입 클래스
+     * @return API 응답 객체
      */
     public <R> R get(String uri, Class<R> responseType) {
-        return webClient.get()
-                .uri(uri)
+        String fullUrl = baseUrl + uri;
+        
+        return WebClient.create()
+                .get()
+                .uri(fullUrl)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, response -> {
                     return response.bodyToMono(ExternalApiErrorResponse.class)

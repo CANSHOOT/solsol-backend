@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * 금융 API 공통 헤더 생성 서비스
+ */
 @Component
 @RequiredArgsConstructor
 public class CommonHeaderService {
@@ -16,6 +19,9 @@ public class CommonHeaderService {
 
     /**
      * 공통 헤더 생성
+     * @param apiName API 명칭
+     * @param userKey 사용자 키 (null 가능)
+     * @return 생성된 공통 헤더 객체
      */
     public CommonHeaderRequest createCommonHeader(String apiName, String userKey) {
         LocalDateTime now = LocalDateTime.now();
