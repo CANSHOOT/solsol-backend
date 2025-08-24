@@ -49,6 +49,12 @@ public class User {
     @Column(name = "is_council_officer", nullable = false)
     private Boolean isCouncilOfficer = false;
 
+    @Column(name = "account_no")
+    private String accountNo;
+
+    @Column(name = "account_balance")
+    private Long accountBalance;
+
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
@@ -62,7 +68,8 @@ public class User {
 
     @Builder
     public User(String userId, String userKey, String studentNumber, String name, 
-                Department department, Long councilId, Boolean isCouncilOfficer) {
+                Department department, Long councilId, Boolean isCouncilOfficer,
+                String accountNo, Long accountBalance) {
         this.userId = userId;
         this.userKey = userKey;
         this.studentNumber = studentNumber;
@@ -70,6 +77,8 @@ public class User {
         this.department = department;
         this.councilId = councilId;
         this.isCouncilOfficer = isCouncilOfficer != null ? isCouncilOfficer : false;
+        this.accountNo = accountNo;
+        this.accountBalance = accountBalance != null ? accountBalance : 0L;
     }
 
     /**
@@ -86,5 +95,23 @@ public class User {
      */
     public void delete() {
         this.deletedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 계좌 잔액 업데이트
+     * @param newBalance 새로운 잔액
+     */
+    public void updateAccountBalance(Long newBalance) {
+        this.accountBalance = newBalance;
+    }
+
+    /**
+     * 계좌 정보 설정 (회원가입 시 사용)
+     * @param accountNo 계좌번호
+     * @param accountBalance 초기 잔액
+     */
+    public void setAccountInfo(String accountNo, Long accountBalance) {
+        this.accountNo = accountNo;
+        this.accountBalance = accountBalance;
     }
 }
