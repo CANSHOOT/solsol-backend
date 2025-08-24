@@ -44,3 +44,4 @@ public class MerchantEntity extends BaseUpdatedCreatedEntity {
         this.supportsNfc = supportsNfc;
     }
 }
+
