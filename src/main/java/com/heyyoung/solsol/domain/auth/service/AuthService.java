@@ -6,8 +6,8 @@ import com.heyyoung.solsol.domain.department.entity.Department;
 import com.heyyoung.solsol.domain.department.repository.DepartmentRepository;
 import com.heyyoung.solsol.domain.user.entity.User;
 import com.heyyoung.solsol.domain.user.repository.UserRepository;
-import com.heyyoung.solsol.external.dto.UserCreateResponse;
-import com.heyyoung.solsol.external.service.FinOpenApiService;
+import com.heyyoung.solsol.external.dto.member.UserCreateResponse;
+import com.heyyoung.solsol.external.service.member.MemberApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
-    private final FinOpenApiService finOpenApiService;
+    private final MemberApiService memberApiService;
     private final JwtUtil jwtUtil;
 
     /**
@@ -42,7 +42,7 @@ public class AuthService {
         }
 
         // 2. 외부 API로 사용자 계정 생성 (전역 API Key 사용)
-        UserCreateResponse userCreateResponse = finOpenApiService.createUser(request.getEmail());
+        UserCreateResponse userCreateResponse = memberApiService.createUser(request.getEmail());
         if (userCreateResponse == null) {
             throw new RuntimeException("사용자 계정 생성에 실패했습니다.");
         }
