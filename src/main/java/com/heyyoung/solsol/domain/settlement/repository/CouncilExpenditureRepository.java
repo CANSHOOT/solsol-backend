@@ -1,6 +1,7 @@
 package com.heyyoung.solsol.domain.settlement.repository;
 
 import com.heyyoung.solsol.domain.settlement.dto.CouncilExpenditureRow;
+import com.heyyoung.solsol.domain.settlement.entity.CouncilExpenditure;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
@@ -9,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 
-public interface CouncilExpenditureRepository extends JpaRepository<Object, Long> {
+public interface CouncilExpenditureRepository extends JpaRepository<CouncilExpenditure, Long> {
 
     @Query("""
         select coalesce(sum(e.amount),0)

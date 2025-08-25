@@ -30,7 +30,7 @@ public class StudentCouncil {
     private Long accountId; // 학생회 전용 계좌(있으면 사용)
 
     /** 프로젝트가 이메일 기반이면 String, DB가 BIGINT면 Long으로 변경하세요. */
-    @Column(name = "president_id", nullable = false, length = 128)
+    @Column(name = "president_id", length = 128)
     private String presidentId;
 
     @Column(name = "council_name", nullable = false, length = 100)

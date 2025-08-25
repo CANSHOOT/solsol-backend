@@ -1,5 +1,6 @@
 package com.heyyoung.solsol.domain.settlement.repository;
 
+import com.heyyoung.solsol.domain.settlement.entity.CouncilFeePayment;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
@@ -7,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.Instant;
 import java.util.Optional;
 
-public interface CouncilFeePaymentRepository extends Repository<Object, Long> {
+public interface CouncilFeePaymentRepository extends Repository<CouncilFeePayment, Long> {
 
     @Query("""
         select case when count(p)>0 then true else false end

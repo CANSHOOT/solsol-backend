@@ -1,6 +1,10 @@
 package com.heyyoung.solsol.domain.settlement.service;
 
-import com.heyyoung.solsol.domain.settlement.dto.*;
+import com.heyyoung.solsol.domain.settlement.dto.CouncilExpenditureRow;
+import com.heyyoung.solsol.domain.settlement.dto.CouncilFeeView;
+import com.heyyoung.solsol.domain.settlement.dto.DeptExpenditureListResponse;
+import com.heyyoung.solsol.domain.settlement.dto.DeptHomeSummaryResponse;
+import com.heyyoung.solsol.domain.settlement.dto.StudentCouncilView;
 import com.heyyoung.solsol.domain.settlement.repository.CouncilExpenditureRepository;
 import com.heyyoung.solsol.domain.settlement.repository.CouncilFeePaymentRepository;
 import com.heyyoung.solsol.domain.settlement.repository.CouncilFeeRepository;
@@ -34,16 +38,21 @@ public class SettlementDeptService {
     private final UserRepository userRepository;          // 학생회장/요청자 조회
     private final AccountApiService accountApiService;    // 외부 잔액 조회
 
-    /** 홈 카드 */
-    public DeptHomeSummaryResponse getDeptHome(
-            Long departmentId, String requesterUserId, YearMonth ym, String tz, String semesterOpt
-    ) {
-        // 1) 활성 학생회
-        StudentCouncilView council = councilRepo.findActiveByDepartmentId(departmentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "활성 학생회를 찾을 수 없습니다."));
 
-        // 2) 학생회장 유저 & 계좌 확인 (야매: 회계 잔액은 학생회장 개인 계좌로 조회)
-        User president = getActiveUser(council.presidentUserId());
+    private static final String PRESIDENT_ID = "solsol5@ssafy.co.kr";
+    /**
+     * 홈 카드
+     * - 잔액: 학생회장 개인 계좌 잔액 사용
+     * - 월 지출 합계/회비 배지: 기존 집계 로직 유지
+     */
+    public DeptHomeSummaryResponse getHomeSummary(
+            String requesterUserId, YearMonth ym, String tz, String semesterOpt
+    ) {
+        // 1) 요청자 기준 활성 학생회 찾기 (프로젝트에 맞는 구현 필요)
+        StudentCouncilView council = councilRepo.findByCouncilId(1);
+
+        // 2) 학생회장 사용자 & 계좌 정보 확인
+        User president = getActiveUser(PRESIDENT_ID);
         requireUserKeyAndAccount(president);
 
         // 3) 기간 계산
@@ -51,10 +60,10 @@ public class SettlementDeptService {
         Instant from = ym.atDay(1).atStartOfDay().toInstant(zone);
         Instant to   = ym.plusMonths(1).atDay(1).atStartOfDay().toInstant(zone);
 
-        // 4) 잔액(외부 금융 API)
-        BigDecimal currentBalance = fetchBalance(president);
+        // 4) 잔액(학생회장 개인 계좌)
+        BigDecimal currentBalance = fetchPresidentBalance(president.getUserKey(), president.getAccountNo());
 
-        // 5) 이번 달 지출 합계(학생회 기준: council_id)
+        // 5) 이번 달 지출 합계(학생회 기준)
         BigDecimal monthSpend = expRepo.sumByCouncilAndPeriod(council.councilId(), from, to)
                 .orElse(BigDecimal.ZERO);
 
@@ -71,33 +80,44 @@ public class SettlementDeptService {
             }
         }
 
+        // departmentId 는 더 이상 사용하지 않으므로 null로 반환(필요 시 DTO 스키마 조정)
         return new DeptHomeSummaryResponse(
                 new DeptHomeSummaryResponse.Header(
-                        departmentId, council.councilId(), council.councilName(), president.getUserId(), president.getName()
+                        null, // departmentId
+                        council.councilId(),
+                        council.councilName(),
+                        president.getUserId(),
+                        president.getName()
                 ),
                 new DeptHomeSummaryResponse.BalanceCard(currentBalance, monthSpend, ym),
                 feeBadge
         );
     }
 
-    /** 지출 리스트 */
-    public DeptExpenditureListResponse getDeptExpenditures(
-            Long departmentId, String requesterUserId, YearMonth ym, String tz, int page, int size
+    /**
+     * 지출 리스트
+     * - 헤더 잔액: 학생회장 개인 계좌 잔액
+     * - 월 지출 합계/목록: 기존 로직 유지
+     */
+    public DeptExpenditureListResponse getExpenditureList(
+            String requesterUserId, YearMonth ym, String tz, int page, int size
     ) {
-        StudentCouncilView council = councilRepo.findActiveByDepartmentId(departmentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "활성 학생회를 찾을 수 없습니다."));
+        // 1) 요청자 기준 활성 학생회
+        StudentCouncilView council = councilRepo.findByCouncilId(1);
 
-        User president = getActiveUser(council.presidentUserId());
+        // 2) 학생회장 사용자 & 계좌 확인
+        User president = getActiveUser(PRESIDENT_ID);
         requireUserKeyAndAccount(president);
 
+        // 3) 기간
         ZoneOffset zone = ZoneOffset.of(tz);
         Instant from = ym.atDay(1).atStartOfDay().toInstant(zone);
         Instant to   = ym.plusMonths(1).atDay(1).atStartOfDay().toInstant(zone);
 
-        // 헤더 잔액
-        BigDecimal currentBalance = fetchBalance(president);
+        // 4) 헤더 잔액(학생회장 계좌)
+        BigDecimal currentBalance = fetchPresidentBalance(president.getUserKey(), president.getAccountNo());
 
-        // 월 지출 합계 + 목록
+        // 5) 월 지출 합계 + 목록
         BigDecimal total = expRepo.sumByCouncilAndPeriod(council.councilId(), from, to)
                 .orElse(BigDecimal.ZERO);
 
@@ -109,7 +129,7 @@ public class SettlementDeptService {
                         e.expenditureId(),
                         e.expenditureDate().atZone(ZoneOffset.UTC).toLocalDate(),
                         e.description(),
-                        e.amount() // 양수(원)
+                        e.amount()
                 )).toList();
 
         return new DeptExpenditureListResponse(
@@ -133,8 +153,8 @@ public class SettlementDeptService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "accountNo 미설정 사용자");
     }
 
-    private BigDecimal fetchBalance(User user) {
-        AccountBalanceResponse res = accountApiService.inquireAccountBalance(user.getUserKey(), user.getAccountNo());
+    private BigDecimal fetchPresidentBalance(String presidentUserKey, String presidentAccountNo) {
+        AccountBalanceResponse res = accountApiService.inquireAccountBalance(presidentUserKey, presidentAccountNo);
         return new BigDecimal(res.getREC().getAccountBalance());
     }
 }
