@@ -55,6 +55,11 @@ public class DutchPayService {
         DutchPayGroup savedGroup = dutchPayGroupRepository.save(dutchPayGroup);
         log.info("더치페이 그룹 생성 완료 - GroupId: {}, Organizer: {}", savedGroup.getGroupId(), userId);
 
+        // 참여자 목록이 제공된 경우 자동으로 참여자 등록 및 알림 처리
+        if (request.getParticipantUserIds() != null && !request.getParticipantUserIds().isEmpty()) {
+            createParticipantsAndSendNotifications(savedGroup, request.getParticipantUserIds());
+        }
+
         return DutchPayResponse.from(savedGroup);
     }
 
@@ -259,6 +264,42 @@ public class DutchPayService {
         if (completedCount >= dutchPayGroup.getParticipantCount()) {
             dutchPayGroup.updateStatus(DutchPayStatus.COMPLETED);
             log.info("더치페이 그룹 완료 - GroupId: {}", dutchPayGroup.getGroupId());
+        }
+    }
+
+    /**
+     * 참여자 생성 및 알림 발송
+     * @param dutchPayGroup 더치페이 그룹
+     * @param participantUserIds 참여자 사용자 ID 목록
+     */
+    private void createParticipantsAndSendNotifications(DutchPayGroup dutchPayGroup, List<String> participantUserIds) {
+        for (String participantUserId : participantUserIds) {
+            try {
+                User participant = findUserById(participantUserId);
+                
+                // 이미 참여한 사용자인지 확인
+                if (dutchPayParticipantRepository.existsByGroupIdAndUserId(dutchPayGroup.getGroupId(), participantUserId)) {
+                    log.warn("이미 참여한 사용자입니다 - GroupId: {}, UserId: {}", dutchPayGroup.getGroupId(), participantUserId);
+                    continue;
+                }
+                
+                // 참여자 생성 (자동 초대이므로 AIRDROP 방식으로 설정)
+                DutchPayParticipant dutchPayParticipant = DutchPayParticipant.builder()
+                        .dutchPayGroup(dutchPayGroup)
+                        .user(participant)
+                        .joinMethod(JoinMethod.AIRDROP)
+                        .build();
+                
+                dutchPayParticipantRepository.save(dutchPayParticipant);
+                log.info("참여자 자동 등록 완료 - GroupId: {}, UserId: {}", dutchPayGroup.getGroupId(), participantUserId);
+                
+                // TODO: 실제 알림 서비스가 구현되면 여기서 알림 발송
+                // notificationService.sendDutchPayInvite(participantUserId, dutchPayGroup);
+                
+            } catch (Exception e) {
+                log.error("참여자 등록 실패 - GroupId: {}, UserId: {}, Error: {}", 
+                        dutchPayGroup.getGroupId(), participantUserId, e.getMessage());
+            }
         }
     }
 }
