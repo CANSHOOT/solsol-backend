@@ -1,5 +1,6 @@
 package com.heyyoung.solsol.external.service.account;
 
+import com.heyyoung.solsol.common.exception.api.ApiException;
 import com.heyyoung.solsol.external.dto.account.*;
 import com.heyyoung.solsol.external.service.FinOpenApiClient;
 import com.heyyoung.solsol.external.service.common.CommonHeaderService;
@@ -48,7 +49,7 @@ public class AccountApiService {
      * @param accountNo 계좌번호
      * @return 계좌 잔액 조회 응답
      */
-    public AccountBalanceResponse inquireAccountBalance(String userKey, String accountNo) {
+    public AccountBalanceResponse inquireAccountBalance(String userKey, String accountNo) throws ApiException {
         var header = commonHeaderService.createCommonHeader("inquireDemandDepositAccountBalance", userKey);
         
         AccountBalanceRequest request = AccountBalanceRequest.builder()
