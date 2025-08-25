@@ -1,10 +1,12 @@
 package com.heyyoung.solsol.domain.settlement.service;
 
+import com.heyyoung.solsol.common.exception.app.SolsolErrorCode;
+import com.heyyoung.solsol.common.exception.app.SolsolException;
 import com.heyyoung.solsol.domain.settlement.dto.CouncilExpenditureRow;
 import com.heyyoung.solsol.domain.settlement.dto.CouncilFeeView;
 import com.heyyoung.solsol.domain.settlement.dto.DeptExpenditureListResponse;
 import com.heyyoung.solsol.domain.settlement.dto.DeptHomeSummaryResponse;
-import com.heyyoung.solsol.domain.settlement.dto.StudentCouncilView;
+import com.heyyoung.solsol.domain.settlement.entity.StudentCouncil;
 import com.heyyoung.solsol.domain.settlement.repository.CouncilExpenditureRepository;
 import com.heyyoung.solsol.domain.settlement.repository.CouncilFeePaymentRepository;
 import com.heyyoung.solsol.domain.settlement.repository.CouncilFeeRepository;
@@ -49,7 +51,8 @@ public class SettlementDeptService {
             String requesterUserId, YearMonth ym, String tz, String semesterOpt
     ) {
         // 1) 요청자 기준 활성 학생회 찾기 (프로젝트에 맞는 구현 필요)
-        StudentCouncilView council = councilRepo.findByCouncilId(1);
+        StudentCouncil council = councilRepo.findByCouncilId(1L)
+                .orElseThrow(() -> new SolsolException(SolsolErrorCode.INVALID_REQUEST));
 
         // 2) 학생회장 사용자 & 계좌 정보 확인
         User president = getActiveUser(PRESIDENT_ID);
@@ -64,13 +67,13 @@ public class SettlementDeptService {
         BigDecimal currentBalance = fetchPresidentBalance(president.getUserKey(), president.getAccountNo());
 
         // 5) 이번 달 지출 합계(학생회 기준)
-        BigDecimal monthSpend = expRepo.sumByCouncilAndPeriod(council.councilId(), from, to)
+        BigDecimal monthSpend = expRepo.sumByCouncilAndPeriod(council.getCouncilId(), from, to)
                 .orElse(BigDecimal.ZERO);
 
         // 6) (선택) 회비 배지: 요청자 기준 해당 학기 납부 완료 여부
         DeptHomeSummaryResponse.FeeBadge feeBadge = null;
         if (semesterOpt != null && !semesterOpt.isBlank()) {
-            Optional<CouncilFeeView> feeOpt = feeRepo.findByCouncilIdAndSemester(council.councilId(), semesterOpt);
+            Optional<CouncilFeeView> feeOpt = feeRepo.findByCouncilIdAndSemester(council.getCouncilId(), semesterOpt);
             if (feeOpt.isPresent()) {
                 boolean paid = feePayRepo.existsCompletedByFeeIdAndUserId(feeOpt.get().feeId(), requesterUserId);
                 feeBadge = new DeptHomeSummaryResponse.FeeBadge(
@@ -84,8 +87,8 @@ public class SettlementDeptService {
         return new DeptHomeSummaryResponse(
                 new DeptHomeSummaryResponse.Header(
                         null, // departmentId
-                        council.councilId(),
-                        council.councilName(),
+                        council.getCouncilId(),
+                        council.getCouncilName(),
                         president.getUserId(),
                         president.getName()
                 ),
@@ -103,7 +106,8 @@ public class SettlementDeptService {
             String requesterUserId, YearMonth ym, String tz, int page, int size
     ) {
         // 1) 요청자 기준 활성 학생회
-        StudentCouncilView council = councilRepo.findByCouncilId(1);
+        StudentCouncil council = councilRepo.findByCouncilId(1L)
+                .orElseThrow(() -> new SolsolException(SolsolErrorCode.INVALID_REQUEST));
 
         // 2) 학생회장 사용자 & 계좌 확인
         User president = getActiveUser(PRESIDENT_ID);
@@ -118,11 +122,11 @@ public class SettlementDeptService {
         BigDecimal currentBalance = fetchPresidentBalance(president.getUserKey(), president.getAccountNo());
 
         // 5) 월 지출 합계 + 목록
-        BigDecimal total = expRepo.sumByCouncilAndPeriod(council.councilId(), from, to)
+        BigDecimal total = expRepo.sumByCouncilAndPeriod(council.getCouncilId(), from, to)
                 .orElse(BigDecimal.ZERO);
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "expenditureDate", "expenditureId"));
-        Page<CouncilExpenditureRow> p = expRepo.findPageByCouncilAndPeriod(council.councilId(), from, to, pageable);
+        Page<CouncilExpenditureRow> p = expRepo.findPageByCouncilAndPeriod(council.getCouncilId(), from, to, pageable);
 
         List<DeptExpenditureListResponse.Item> items = p.getContent().stream()
                 .map(e -> new DeptExpenditureListResponse.Item(

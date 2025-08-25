@@ -2,13 +2,14 @@ package com.heyyoung.solsol.domain.settlement.repository;
 
 import com.heyyoung.solsol.domain.settlement.dto.CouncilFeeView;
 import com.heyyoung.solsol.domain.settlement.entity.CouncilFee;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface CouncilFeeRepository extends Repository<CouncilFee, Long> {
+public interface CouncilFeeRepository extends JpaRepository<CouncilFee, Long> {
 
     @Query("""
         select new com.heyyoung.solsol.domain.settlement.dto.CouncilFeeView(

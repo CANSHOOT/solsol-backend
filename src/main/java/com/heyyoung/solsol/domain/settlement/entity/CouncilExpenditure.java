@@ -33,7 +33,7 @@ public class CouncilExpenditure {
     private Long accountId;
 
     /** 프로젝트가 이메일 기반이면 String, DB가 BIGINT면 Long으로 변경 */
-    @Column(name = "approved_by", nullable = false, length = 128)
+    @Column(name = "approved_by", length = 128)
     private String approvedBy;
 
     @Column(name = "amount", precision = 19, scale = 2, nullable = false)
