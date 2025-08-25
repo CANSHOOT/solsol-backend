@@ -18,6 +18,8 @@ public class UserDto {
     private String departmentName;
     private Long councilId;
     private boolean isCouncilOfficer;
+    private String accountNo;
+    private Long accountBalance;
 
     /**
      * User 엔티티를 UserDto로 변환
@@ -33,6 +35,8 @@ public class UserDto {
                 .departmentName(user.getDepartment().getDepartmentName())
                 .councilId(user.getCouncilId())
                 .isCouncilOfficer(user.getIsCouncilOfficer())
+                .accountNo(user.getAccountNo())
+                .accountBalance(user.getAccountBalance())
                 .build();
     }
 }
