@@ -17,4 +17,11 @@ public class MenuService {
                 .map(GetMenuResponse::from)
                 .toList();
     }
+
+    public List<GetMenuResponse> getPayMenus() {
+        return menuRepository.findAllById(List.of(1, 2, 3))
+                .stream()
+                .map(GetMenuResponse::from)
+                .toList();
+    }
 }
