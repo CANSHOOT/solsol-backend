@@ -30,7 +30,10 @@ public enum FinOpenApiErrorCode implements ApiErrorCode {
     E4004("E4004", "존재하지 않는 API KEY입니다."),
     
     // 기본 에러
-    UNKNOWN_ERROR("UNKNOWN", "알 수 없는 오류가 발생했습니다.");
+    UNKNOWN_ERROR("UNKNOWN", "알 수 없는 오류가 발생했습니다."),
+
+    // 거래 에러
+    NOT_ENOUGH_MONEY("A1011", "거래금액이 유효하지 않습니다.");
     
     private final String code;
     private final String message;
