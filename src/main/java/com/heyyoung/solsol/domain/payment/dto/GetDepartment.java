@@ -2,5 +2,5 @@ package com.heyyoung.solsol.domain.payment.dto;
 
 import java.math.BigDecimal;
 
-public record GetDepartment(BigDecimal discountRate) {
+public record GetDepartment(BigDecimal discountRate, String departmentName) {
 }
