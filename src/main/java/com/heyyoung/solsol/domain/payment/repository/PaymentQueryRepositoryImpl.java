@@ -23,7 +23,8 @@ public class PaymentQueryRepositoryImpl extends QuerydslRepositorySupport implem
                 .where(user.userId.eq(userId))
                 .where(department.isPartner.eq(true))
                 .select(Projections.constructor(GetDepartment.class,
-                        department.discountRate
+                        department.discountRate,
+                        department.departmentName
                 )).fetchOne();
     }
 

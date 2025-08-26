@@ -4,6 +4,7 @@ import com.heyyoung.solsol.domain.discount.DiscountCouponService;
 import com.heyyoung.solsol.domain.menu.MenuService;
 import com.heyyoung.solsol.domain.menu.dto.GetMenuResponse;
 import com.heyyoung.solsol.domain.payment.dto.CreatePaymentResponse;
+import com.heyyoung.solsol.domain.payment.dto.GetDepartment;
 import com.heyyoung.solsol.domain.payment.dto.GetPaymentPreviewResponse;
 import com.heyyoung.solsol.domain.payment.exception.NotEnoughMoneyException;
 import com.heyyoung.solsol.domain.payment.repository.PaymentRepository;
@@ -33,11 +34,12 @@ public class PaymentService {
         for (GetMenuResponse getMenuResponse : list) {
             total = total.add(getMenuResponse.price());
         }
-        BigDecimal discountRate = paymentRepository.getDepartment(userId)
-                .discountRate();
+        GetDepartment department = paymentRepository.getDepartment(userId);
+        BigDecimal discountRate = department.discountRate();
+        String name = department.departmentName();
 
         BigDecimal discount = total.multiply(discountRate);
-        return new GetPaymentPreviewResponse(list, total.intValue(), extractPoint(discountRate), discount.intValue());
+        return new GetPaymentPreviewResponse(list, total.intValue(), extractPoint(discountRate), discount.intValue(), name);
     }
 
     @Transactional
