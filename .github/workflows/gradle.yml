@@ -89,6 +89,6 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            cd ~/solsol-backend/build/libs
+            cd /home/ubuntu/solsol/build/libs
             sudo ps -ef | grep -v grep | grep "java -jar solsol" | awk '{print $2}' | xargs -r kill -15
             sudo nohup java -jar solsol-0.0.1-SNAPSHOT.jar --spring.profiles.active=profile2 --jasypt.encryptor.password=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }} >> ./solsol.log 2>&1 &
