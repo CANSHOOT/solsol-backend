@@ -55,6 +55,6 @@ spring:
       on-profile: profile2
 
   datasource:
-    password: ENC(3UiWjAwBcbccI7sybtojwuk6UDUENPD3OV4vEsGLmsWJSTO3+QuI6EUpYy3O/9fijXMiR6sat/GJXoa3UUlLr6NMiB5miaJH)
+    password: ENC(UENUlWqBNf2EwH9wY4AUbIuOfFj8g1fE)
     username: ENC(nNpYuEyJwrtcc1wH9d1+cg==)
-    url: ENC(GWkhJ1en1NhxsoQebNW1ZpyBRPNi/8/TxK0BWolj87MnPpPuORVBc4n9++XD4adt)
+    url: ENC(Lts7yuuhkWxTtSsNIFck3xZ0QrtMz9Ccb0APRgCNvsKsFfSLicXT/fnvSpkDZqGHtN/YAVmsZTPEqLTObjnd2PDpY1uf65BoL1r4C28bed6lJU0ADKItsw==)
