@@ -109,4 +109,11 @@ public class DutchPayController {
         List<ParticipantResponse> response = dutchPayService.getUserParticipations(userId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/me/summary")
+    public ResponseEntity<MySettlementSummaryResponse> getMySettlementSummary(Authentication auth) {
+        String userId = auth.getName(); // JWT에서 추출
+        MySettlementSummaryResponse response = dutchPayService.getMySettlementSummary(userId);
+        return ResponseEntity.ok(response);
+    }
 }
