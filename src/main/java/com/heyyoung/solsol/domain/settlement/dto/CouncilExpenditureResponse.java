@@ -8,6 +8,6 @@ public record CouncilExpenditureResponse(
         Long councilId,
         BigDecimal amount,
         String description,
-        Instant spentAt,
+        Instant expenditureDate,
         Instant createdAt
 ) {}
