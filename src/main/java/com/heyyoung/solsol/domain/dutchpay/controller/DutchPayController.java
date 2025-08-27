@@ -55,13 +55,13 @@ public class DutchPayController {
      * @param auth 인증 정보
      * @return 참여자 정보
      */
-    @PostMapping("/{groupId}/join")
+    @PostMapping("/{groupId}/join/{userId}")
     public ResponseEntity<ParticipantResponse> joinDutchPay(
             @PathVariable Long groupId,
+            @PathVariable String userId,
             @RequestBody JoinDutchPayRequest request,
             Authentication auth
     ) {
-        String userId = auth.getName();
         ParticipantResponse response = dutchPayService.joinDutchPay(groupId, request, userId);
         return ResponseEntity.ok(response);
     }
