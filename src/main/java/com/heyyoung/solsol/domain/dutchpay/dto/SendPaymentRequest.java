@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class SendPaymentRequest {
-    
     private String transactionSummary;
 }

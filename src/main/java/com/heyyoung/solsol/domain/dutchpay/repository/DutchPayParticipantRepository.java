@@ -62,4 +62,6 @@ public interface DutchPayParticipantRepository extends JpaRepository<DutchPayPar
 
     // 특정 그룹의 참가자들
     List<DutchPayParticipant> findByDutchPayGroup_GroupId(Long groupId);
+
+    Optional<DutchPayParticipant> findByDutchPayGroup_GroupIdAndUser_UserId(Long groupId, String userId);
 }
