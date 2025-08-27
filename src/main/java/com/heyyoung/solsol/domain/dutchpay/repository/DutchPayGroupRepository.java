@@ -45,4 +45,7 @@ public interface DutchPayGroupRepository extends JpaRepository<DutchPayGroup, Lo
      * @return 더치페이 그룹 정보
      */
     Optional<DutchPayGroup> findByPaymentId(Long paymentId);
+
+    // 내가 받은(받을) 돈: organizer_id로 조회
+    List<DutchPayGroup> findByOrganizer_UserId(String organizerId);
 }

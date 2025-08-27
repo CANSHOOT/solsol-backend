@@ -56,4 +56,10 @@ public interface DutchPayParticipantRepository extends JpaRepository<DutchPayPar
      */
     @Query("SELECT COUNT(p) > 0 FROM DutchPayParticipant p WHERE p.dutchPayGroup.groupId = :groupId AND p.user.userId = :userId")
     boolean existsByGroupIdAndUserId(@Param("groupId") Long groupId, @Param("userId") String userId);
+
+    // 내가 보낼 돈: 참가자 테이블에서 내 userId로 조회
+    List<DutchPayParticipant> findByUser_UserId(String userId);
+
+    // 특정 그룹의 참가자들
+    List<DutchPayParticipant> findByDutchPayGroup_GroupId(Long groupId);
 }
