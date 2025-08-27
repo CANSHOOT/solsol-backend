@@ -27,7 +27,7 @@ public class CouncilExpenditureService {
                 .accountId(council.getAccountId())
                 .amount(request.amount())
                 .description(request.description())
-                .expenditureDate(request.spentAt())
+                .expenditureDate(request.expenditureDate())
                 .build();
 
         CouncilExpenditure saved = expenditureRepository.save(expenditure);

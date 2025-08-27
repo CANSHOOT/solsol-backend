@@ -7,5 +7,5 @@ public record CouncilExpenditureRequest(
         Long councilId,
         BigDecimal amount,
         String description,
-        Instant spentAt
+        Instant expenditureDate
 ) {}
