@@ -6,6 +6,7 @@ import com.heyyoung.solsol.domain.dutchpay.dto.*;
 import com.heyyoung.solsol.domain.dutchpay.entity.*;
 import com.heyyoung.solsol.domain.dutchpay.repository.DutchPayGroupRepository;
 import com.heyyoung.solsol.domain.dutchpay.repository.DutchPayParticipantRepository;
+import com.heyyoung.solsol.domain.notification.service.FCMService;
 import com.heyyoung.solsol.domain.user.entity.User;
 import com.heyyoung.solsol.domain.user.repository.UserRepository;
 import com.heyyoung.solsol.external.dto.account.AccountBalanceResponse;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class DutchPayService {
 
@@ -36,6 +38,7 @@ public class DutchPayService {
     private final DutchPayParticipantRepository dutchPayParticipantRepository;
     private final UserRepository userRepository;
     private final AccountApiService accountApiService;
+    private final FCMService fcmService;
 
     /**
      * 더치페이 생성
@@ -59,7 +62,62 @@ public class DutchPayService {
         DutchPayGroup savedGroup = dutchPayGroupRepository.save(dutchPayGroup);
         log.info("더치페이 그룹 생성 완료 - GroupId: {}, Organizer: {}", savedGroup.getGroupId(), userId);
 
-        return DutchPayResponse.from(savedGroup);
+        // 기본 응답 생성
+        DutchPayResponse response = DutchPayResponse.from(savedGroup);
+
+        // 초대할 사용자 목록이 있다면 자동으로 푸시 알림 전송
+        if (request.getInviteUserIds() != null && !request.getInviteUserIds().isEmpty()) {
+            try {
+                // 트랜잭션 커밋 후 푸시 알림 전송 (현재는 동기 처리)
+                inviteUsersToDutchPay(savedGroup.getGroupId(), request.getInviteUserIds(), userId);
+                log.info("더치페이 생성 시 자동 초대 완료 - GroupId: {}, 초대 사용자 수: {}",
+                        savedGroup.getGroupId(), request.getInviteUserIds().size());
+            } catch (Exception e) {
+                log.error("더치페이 생성 시 자동 초대 실패 - GroupId: {}, Error: {}",
+                        savedGroup.getGroupId(), e.getMessage());
+                // 푸시 알림 실패해도 더치페이 생성은 성공으로 처리
+            }
+        }
+
+        return response;
+    }
+
+    /**
+     * 더치페이에 특정 사용자들을 초대하고 푸시 알림 전송
+     * @param groupId 그룹 ID
+     * @param inviteUserIds 초대할 사용자 ID 목록
+     * @param organizerId 주최자 ID
+     */
+    @Transactional
+    public void inviteUsersToDutchPay(Long groupId, List<String> inviteUserIds, String organizerId) {
+        DutchPayGroup dutchPayGroup = findDutchPayGroupById(groupId);
+        User organizer = findUserById(organizerId);
+
+        log.info("더치페이 초대 시작 - GroupId: {}, 초대할 사용자 수: {}", groupId, inviteUserIds.size());
+
+        for (String userId : inviteUserIds) {
+            try {
+                User invitedUser = findUserById(userId);
+
+                // 사용자의 FCM 토큰이 있는 경우에만 푸시 알림 전송
+                if (invitedUser.hasFcmToken()) {
+                    fcmService.sendDutchPayInviteNotification(
+                            invitedUser.getFcmToken(),
+                            organizer.getName(),
+                            dutchPayGroup.getGroupName(),
+                            groupId
+                    );
+                    log.info("더치페이 초대 푸시 알림 전송 완료 - UserId: {}, GroupId: {}", userId, groupId);
+                } else {
+                    log.warn("FCM 토큰이 없는 사용자 - UserId: {}", userId);
+                }
+            } catch (Exception e) {
+                log.error("더치페이 초대 푸시 알림 전송 실패 - UserId: {}, Error: {}", userId, e.getMessage());
+                // 한 명의 알림 실패가 전체 프로세스를 중단시키지 않도록 continue
+            }
+        }
+
+        log.info("더치페이 초대 프로세스 완료 - GroupId: {}", groupId);
     }
 
     /**

@@ -110,6 +110,25 @@ public class DutchPayController {
         return ResponseEntity.ok(response);
     }
 
+
+    /**
+     * 더치페이 초대 (푸시 알림 전송)
+     * @param groupId 더치페이 그룹 ID
+     * @param request 초대 요청
+     * @param auth 인증 정보
+     * @return 초대 결과
+     */
+    @PostMapping("/{groupId}/invite")
+    public ResponseEntity<String> inviteUsersToDutchPay(
+            @PathVariable Long groupId,
+            @RequestBody InviteUsersRequest request,
+            Authentication auth
+    ) {
+        String organizerId = auth.getName();
+        dutchPayService.inviteUsersToDutchPay(groupId, request.getUserIds(), organizerId);
+        return ResponseEntity.ok("초대 알림이 전송되었습니다.");
+    }
+
     @GetMapping("/me/summary")
     public ResponseEntity<MySettlementSummaryResponse> getMySettlementSummary(Authentication auth) {
         String userId = auth.getName(); // JWT에서 추출

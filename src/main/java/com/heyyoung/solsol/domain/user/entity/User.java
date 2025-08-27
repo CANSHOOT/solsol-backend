@@ -66,10 +66,13 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(name = "fcm_token", length = 1024)
+    private String fcmToken;
+
     @Builder
     public User(String userId, String userKey, String studentNumber, String name, 
                 Department department, Long councilId, Boolean isCouncilOfficer,
-                String accountNo, Long accountBalance) {
+                String accountNo, Long accountBalance,  String fcmToken) {
         this.userId = userId;
         this.userKey = userKey;
         this.studentNumber = studentNumber;
@@ -79,6 +82,7 @@ public class User {
         this.isCouncilOfficer = isCouncilOfficer != null ? isCouncilOfficer : false;
         this.accountNo = accountNo;
         this.accountBalance = accountBalance != null ? accountBalance : 0L;
+        this.fcmToken = fcmToken;
     }
 
     /**
@@ -113,5 +117,13 @@ public class User {
     public void setAccountInfo(String accountNo, Long accountBalance) {
         this.accountNo = accountNo;
         this.accountBalance = accountBalance;
+    }
+
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
+    public boolean hasFcmToken() {
+        return this.fcmToken != null && !this.fcmToken.trim().isEmpty();
     }
 }
