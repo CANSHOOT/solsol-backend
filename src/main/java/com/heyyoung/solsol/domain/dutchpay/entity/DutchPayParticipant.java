@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -49,6 +50,10 @@ public class DutchPayParticipant extends BaseUpdatedCreatedEntity {
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
 
+    /** 정산 금액 */
+    @Column(name = "settlement_amount", nullable = false)
+    private BigDecimal settlementAmount = BigDecimal.ZERO;
+
     @Builder
     public DutchPayParticipant(DutchPayGroup dutchPayGroup, User user, JoinMethod joinMethod) {
         this.dutchPayGroup = dutchPayGroup;
@@ -56,6 +61,7 @@ public class DutchPayParticipant extends BaseUpdatedCreatedEntity {
         this.joinMethod = joinMethod;
         this.paymentStatus = ParticipantPaymentStatus.PENDING;
         this.joinedAt = LocalDateTime.now();
+        this.settlementAmount = BigDecimal.ZERO;
     }
 
     /**
@@ -73,5 +79,12 @@ public class DutchPayParticipant extends BaseUpdatedCreatedEntity {
      */
     public void failPayment() {
         this.paymentStatus = ParticipantPaymentStatus.FAILED;
+    }
+
+    /**
+     * 정산 금액 설정
+     */
+    public void updateSettlementAmount(BigDecimal amount) {
+        this.settlementAmount = amount;
     }
 }
