@@ -28,10 +28,7 @@ public interface CouncilExpenditureRepository extends JpaRepository<CouncilExpen
         )
         from CouncilExpenditure e
         where e.councilId = :councilId
-          and e.expenditureDate >= :from and e.expenditureDate < :to
+        order by e.expenditureDate desc
     """)
-    Page<CouncilExpenditureRow> findPageByCouncilAndPeriod(@Param("councilId") Long councilId,
-                                                           @Param("from") Instant from,
-                                                           @Param("to") Instant to,
-                                                           Pageable pageable);
+    Page<CouncilExpenditureRow> findPageByCouncil(@Param("councilId") Long councilId, Pageable pageable);
 }

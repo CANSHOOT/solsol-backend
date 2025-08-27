@@ -126,7 +126,7 @@ public class SettlementDeptService {
                 .orElse(BigDecimal.ZERO);
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "expenditureDate", "expenditureId"));
-        Page<CouncilExpenditureRow> p = expRepo.findPageByCouncilAndPeriod(council.getCouncilId(), from, to, pageable);
+        Page<CouncilExpenditureRow> p = expRepo.findPageByCouncil(council.getCouncilId(), pageable);
 
         List<DeptExpenditureListResponse.Item> items = p.getContent().stream()
                 .map(e -> new DeptExpenditureListResponse.Item(
