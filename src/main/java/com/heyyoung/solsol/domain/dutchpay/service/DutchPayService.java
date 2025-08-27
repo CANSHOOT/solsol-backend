@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -28,7 +29,6 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class DutchPayService {
 
@@ -43,6 +43,7 @@ public class DutchPayService {
      * @param userId 주최자 ID
      * @return 생성된 더치페이 정보
      */
+    @Transactional
     public DutchPayResponse createDutchPay(CreateDutchPayRequest request, String userId) {
         User organizer = findUserById(userId);
         
@@ -79,6 +80,7 @@ public class DutchPayService {
      * @param userId 사용자 ID
      * @return 참여자 정보
      */
+    @Transactional
     public ParticipantResponse joinDutchPay(Long groupId, JoinDutchPayRequest request, String userId) {
         DutchPayGroup dutchPayGroup = findDutchPayGroupById(groupId);
         User user = findUserById(userId);
@@ -116,6 +118,7 @@ public class DutchPayService {
      * @param userId 사용자 ID
      * @return 송금 처리 결과
      */
+    @Transactional
     public PaymentResponse sendPayment(Long groupId, SendPaymentRequest request, String userId) {
         DutchPayGroup dutchPayGroup = findDutchPayGroupById(groupId);
         
@@ -232,7 +235,8 @@ public class DutchPayService {
      * 금융 API를 통해 최신 잔액을 조회하여 DB에 반영
      * @param user 업데이트할 사용자
      */
-    private void updateUserBalance(User user) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateUserBalance(User user) {
         try {
             AccountBalanceResponse balanceResponse = accountApiService.inquireAccountBalance(
                     user.getUserKey(), 
@@ -268,6 +272,11 @@ public class DutchPayService {
         }
     }
 
+    /**
+     * 내 정산 상태 조회
+     * @param userId 사용자 ID
+     */
+    @Transactional
     public MySettlementSummaryResponse getMySettlementSummary(String userId) {
 
         // 1) 내가 보낼 돈 (내가 참가자인 항목들)
