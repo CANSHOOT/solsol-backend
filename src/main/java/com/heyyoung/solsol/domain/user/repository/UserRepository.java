@@ -29,4 +29,9 @@ public interface UserRepository extends JpaRepository<User, String> {
            "(u.studentNumber LIKE %:query% OR u.name LIKE %:query%) " +
            "ORDER BY u.name ASC")
     List<User> findByStudentNumberOrNameContaining(@Param("query") String query, Pageable pageable);
+
+    /**
+     * FCM 토큰으로 사용자 조회
+     */
+    Optional<User> findByFcmToken(String fcmToken);
 }
