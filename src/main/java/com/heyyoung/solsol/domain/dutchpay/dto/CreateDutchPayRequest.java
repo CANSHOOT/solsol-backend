@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 더치페이 생성 요청 DTO
@@ -16,4 +17,5 @@ public class CreateDutchPayRequest {
     private String groupName;
     private BigDecimal totalAmount;
     private Integer participantCount;
+    private List<String> inviteUserIds;
 }
