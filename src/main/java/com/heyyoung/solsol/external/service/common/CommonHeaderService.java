@@ -47,7 +47,7 @@ public class CommonHeaderService {
      * 기관거래고유번호 생성 (YYYYMMDD + HHMMSS + 일련번호 6자리)
      */
     private String generateTransactionUniqueNo() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
         String dateTime = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         String serialNumber = String.format("%06d", (int) (Math.random() * 1000000));
         return dateTime + serialNumber;
