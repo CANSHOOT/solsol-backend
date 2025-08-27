@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -96,6 +97,9 @@ public class DutchPayService {
                 .user(user)
                 .joinMethod(request.getJoinMethod())
                 .build();
+
+        // 초기 정산 금액 0원 설정 (명시적으로)
+        participant.updateSettlementAmount(request.getSettlementAmount());
 
         DutchPayParticipant savedParticipant = dutchPayParticipantRepository.save(participant);
         log.info("더치페이 참여 완료 - GroupId: {}, UserId: {}", groupId, userId);

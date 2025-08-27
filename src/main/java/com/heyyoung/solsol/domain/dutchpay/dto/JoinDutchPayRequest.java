@@ -4,12 +4,14 @@ import com.heyyoung.solsol.domain.dutchpay.entity.JoinMethod;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 /**
  * 더치페이 참여 요청 DTO
  */
 @Getter
 @NoArgsConstructor
 public class JoinDutchPayRequest {
-    
     private JoinMethod joinMethod;
+    private BigDecimal settlementAmount; // 추가됨
 }
