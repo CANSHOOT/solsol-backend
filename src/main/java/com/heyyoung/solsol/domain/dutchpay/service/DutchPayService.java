@@ -18,6 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -153,6 +156,9 @@ public class DutchPayService {
                 .user(user)
                 .joinMethod(request.getJoinMethod())
                 .build();
+
+        // 초기 정산 금액 0원 설정 (명시적으로)
+        participant.updateSettlementAmount(request.getSettlementAmount());
 
         DutchPayParticipant savedParticipant = dutchPayParticipantRepository.save(participant);
         log.info("더치페이 참여 완료 - GroupId: {}, UserId: {}", groupId, userId);
@@ -319,5 +325,99 @@ public class DutchPayService {
         }
     }
 
+
+    public MySettlementSummaryResponse getMySettlementSummary(String userId) {
+
+        // 1) 내가 보낼 돈 (내가 참가자인 항목들)
+        List<DutchPayParticipant> myParticipations = dutchPayParticipantRepository.findByUser_UserId(userId);
+
+        List<MyPayableItemResponse> payables = myParticipations.stream()
+                .map(p -> {
+                    var g = p.getDutchPayGroup();
+                    String organizerUserId = resolveOrganizerUserId(g);
+                    String organizerName   = resolveOrganizerName(g);
+                    return new MyPayableItemResponse(
+                            g.getGroupId(),
+                            g.getGroupName(),
+                            organizerUserId,
+                            organizerName,
+                            p.getSettlementAmount(),
+                            toKoreanStatus(p.getPaymentStatus())
+                    );
+                })
+                .sorted(Comparator.comparing(MyPayableItemResponse::groupId).reversed())
+                .toList();
+
+        // 2) 내가 받을 돈 (내가 organizer인 그룹들의 모든 참가자들)
+        List<DutchPayGroup> myGroups = findGroupsByOrganizer(userId);
+        List<MyReceivableItemResponse> receivables = new ArrayList<>();
+
+        for (DutchPayGroup g : myGroups) {
+            List<DutchPayParticipant> participants =
+                    dutchPayParticipantRepository.findByDutchPayGroup_GroupId(g.getGroupId());
+
+            for (DutchPayParticipant p : participants) {
+                // 주최자 자신은 빼고 싶으면 주석 해제
+                // if (userId.equals(p.getUser().getUserId())) continue;
+
+                receivables.add(new MyReceivableItemResponse(
+                        g.getGroupId(),
+                        g.getGroupName(),
+                        p.getUser().getUserId(),
+                        p.getUser().getName(),
+                        p.getSettlementAmount(),
+                        toKoreanStatus(p.getPaymentStatus())
+                ));
+            }
+        }
+
+        receivables.sort(
+                Comparator.comparing(MyReceivableItemResponse::groupId)
+                        .thenComparing(MyReceivableItemResponse::userName)
+        );
+
+        return MySettlementSummaryResponse.of(payables, receivables);
+    }
+
+    private List<DutchPayGroup> findGroupsByOrganizer(String userId) {
+        try {
+            // 연관관계인 경우
+            return dutchPayGroupRepository.findByOrganizer_UserId(userId);
+        } catch (Exception ignore) {
+            // organizerId(String) 필드인 경우
+            return dutchPayGroupRepository.findByOrganizer_UserId(userId);
+        }
+    }
+
+    private String resolveOrganizerUserId(DutchPayGroup g) {
+        try {
+            if (g.getOrganizer() != null) return g.getOrganizer().getUserId();
+        } catch (NoSuchMethodError | NullPointerException ignored) {}
+        return g.getOrganizer().getUserId(); // String 필드인 경우
+    }
+
+    private String resolveOrganizerName(DutchPayGroup g) {
+        try {
+            if (g.getOrganizer() != null) return g.getOrganizer().getName();
+        } catch (NoSuchMethodError | NullPointerException ignored) {}
+
+        // organizerId만 있는 경우 UserRepo로 이름 조회
+        try {
+            return userRepository.findById(g.getOrganizer().getUserId())
+                    .map(User::getName)
+                    .orElse(null);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String toKoreanStatus(ParticipantPaymentStatus status) {
+        if (status == null) return "기타";
+        return switch (status) {
+            case PENDING   -> "진행중";
+            case COMPLETED -> "완료";
+            case FAILED    -> "실패";
+        };
+    }
 
 }

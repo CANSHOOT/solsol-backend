@@ -110,6 +110,7 @@ public class DutchPayController {
         return ResponseEntity.ok(response);
     }
 
+
     /**
      * 더치페이 초대 (푸시 알림 전송)
      * @param groupId 더치페이 그룹 ID
@@ -126,5 +127,12 @@ public class DutchPayController {
         String organizerId = auth.getName();
         dutchPayService.inviteUsersToDutchPay(groupId, request.getUserIds(), organizerId);
         return ResponseEntity.ok("초대 알림이 전송되었습니다.");
+    }
+
+    @GetMapping("/me/summary")
+    public ResponseEntity<MySettlementSummaryResponse> getMySettlementSummary(Authentication auth) {
+        String userId = auth.getName(); // JWT에서 추출
+        MySettlementSummaryResponse response = dutchPayService.getMySettlementSummary(userId);
+        return ResponseEntity.ok(response);
     }
 }
