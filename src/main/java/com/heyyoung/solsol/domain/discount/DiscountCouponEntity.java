@@ -22,6 +22,7 @@ public class DiscountCouponEntity extends BaseUpdatedCreatedEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Enumerated(EnumType.STRING)
     private CouponStatus couponStatus;
 
     private BigDecimal amount;
