@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -204,7 +205,7 @@ public class DutchPayService {
                     participantUser.getUserKey(),
                     organizerUser.getAccountNo(), // 입금계좌 (주최자의 실제 계좌번호)
                     request.getTransactionSummary() != null ? request.getTransactionSummary() : "더치페이 정산",
-                    dutchPayGroup.getAmountPerPerson().toString(),
+                    participant.getSettlementAmount().toString(), // 참여자가 내야 할 돈
                     participantUser.getAccountNo(), // 출금계좌 (참여자의 실제 계좌번호)
                     "더치페이 송금"
             );
