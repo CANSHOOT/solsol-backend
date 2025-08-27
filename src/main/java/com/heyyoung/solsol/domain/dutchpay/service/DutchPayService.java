@@ -226,7 +226,7 @@ public class DutchPayService {
             // 모든 참여자가 결제 완료했는지 확인
             checkAndCompleteGroup(dutchPayGroup);
 
-            return PaymentResponse.success(transactionId, dutchPayGroup.getAmountPerPerson());
+            return PaymentResponse.success(transactionId, participant.getSettlementAmount());
 
         } catch (Exception e) {
             log.error("더치페이 송금 실패 - GroupId: {}, UserId: {}, Error: {}", 
