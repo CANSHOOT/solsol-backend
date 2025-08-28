@@ -15,9 +15,17 @@ spring:
       ddl-auto: none # 외래키 설정 없이 직접 테이블을 생성하기 위해서
 
     properties:
+      hibernate.order_inserts: true
       hibernate:
         show_sql: true
         format_sql: true
+        jdbc:
+          batch_size: 1000                    # 배치 INSERT 크기
+          batch_versioned_data: true          # 버전 관리 데이터 배치 처리
+        order_updates: true
+        generate_statistics: false            # 통계 생성 비활성화 (성능 향상)
+        cache:
+          use_second_level_cache: false       # 2차 캐시 비활성화 (배치에서 불필요)
 
     open-in-view: false # 성능 측면에서 false로 설정
 
