@@ -50,7 +50,7 @@ public class DutchPayService {
     @Transactional
     public DutchPayResponse createDutchPay(CreateDutchPayRequest request, String userId) {
         User organizer = findUserById(userId);
-        
+
         // 더치페이 그룹 생성
         DutchPayGroup dutchPayGroup = DutchPayGroup.builder()
                 .organizer(organizer)
@@ -66,13 +66,20 @@ public class DutchPayService {
         // 기본 응답 생성
         DutchPayResponse response = DutchPayResponse.from(savedGroup);
 
+        // 초대할 사용자 목록 결정
+        List<String> inviteUserIds = request.getInviteUserIds();
+        if (inviteUserIds == null || inviteUserIds.isEmpty()) {
+            // inviteUserIds가 없으면 participantUserIds 사용 (새로 추가)
+            inviteUserIds = request.getParticipantUserIds();
+        }
+
         // 초대할 사용자 목록이 있다면 자동으로 푸시 알림 전송
-        if (request.getInviteUserIds() != null && !request.getInviteUserIds().isEmpty()) {
+        if (inviteUserIds != null && !inviteUserIds.isEmpty()) {
             try {
                 // 트랜잭션 커밋 후 푸시 알림 전송 (현재는 동기 처리)
-                inviteUsersToDutchPay(savedGroup.getGroupId(), request.getInviteUserIds(), userId);
+                inviteUsersToDutchPay(savedGroup.getGroupId(), inviteUserIds, userId);
                 log.info("더치페이 생성 시 자동 초대 완료 - GroupId: {}, 초대 사용자 수: {}",
-                        savedGroup.getGroupId(), request.getInviteUserIds().size());
+                        savedGroup.getGroupId(), inviteUserIds.size());
             } catch (Exception e) {
                 log.error("더치페이 생성 시 자동 초대 실패 - GroupId: {}, Error: {}",
                         savedGroup.getGroupId(), e.getMessage());

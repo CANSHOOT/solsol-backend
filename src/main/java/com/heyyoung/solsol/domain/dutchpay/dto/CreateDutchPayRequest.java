@@ -18,4 +18,5 @@ public class CreateDutchPayRequest {
     private BigDecimal totalAmount;
     private Integer participantCount;
     private List<String> inviteUserIds;
+    private List<String> participantUserIds;
 }
