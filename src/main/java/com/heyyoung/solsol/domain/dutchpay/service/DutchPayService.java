@@ -113,8 +113,7 @@ public class DutchPayService {
                             invitedUser.getFcmToken(),
                             organizer.getName(),
                             dutchPayGroup.getGroupName(),
-                            groupId,
-                            invitedUser.getUserId()
+                            groupId
                     );
                     log.info("더치페이 초대 푸시 알림 전송 완료 - UserId: {}, GroupId: {}", userId, groupId);
                 } else {
@@ -306,19 +305,19 @@ public class DutchPayService {
     public void updateUserBalance(User user) {
         try {
             AccountBalanceResponse balanceResponse = accountApiService.inquireAccountBalance(
-                    user.getUserKey(), 
+                    user.getUserKey(),
                     user.getAccountNo()
             );
-            
+
             // 잔액을 Long 타입으로 변환 (String -> Long)
             Long newBalance = Long.parseLong(balanceResponse.getREC().getAccountBalance());
             user.updateAccountBalance(newBalance);
-            
-            log.info("사용자 잔액 업데이트 완료 - UserId: {}, AccountNo: {}, Balance: {}", 
+
+            log.info("사용자 잔액 업데이트 완료 - UserId: {}, AccountNo: {}, Balance: {}",
                     user.getUserId(), user.getAccountNo(), newBalance);
-                    
+
         } catch (Exception e) {
-            log.error("사용자 잔액 업데이트 실패 - UserId: {}, Error: {}", 
+            log.error("사용자 잔액 업데이트 실패 - UserId: {}, Error: {}",
                     user.getUserId(), e.getMessage());
             // 잔액 업데이트 실패해도 이체는 완료되었으므로 예외를 던지지 않음
         }
