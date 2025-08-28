@@ -1,6 +1,11 @@
 package com.heyyoung.solsol.domain.notification.service;
 
 import com.google.firebase.messaging.*;
+import com.heyyoung.solsol.common.exception.app.SolsolErrorCode;
+import com.heyyoung.solsol.common.exception.app.SolsolException;
+import com.heyyoung.solsol.domain.dutchpay.entity.DutchPayParticipant;
+import com.heyyoung.solsol.domain.dutchpay.repository.DutchPayParticipantRepository;
+import com.heyyoung.solsol.domain.dutchpay.service.DutchPayService;
 import com.heyyoung.solsol.domain.user.entity.User;
 import com.heyyoung.solsol.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * FCM 푸시 알림 서비스
@@ -20,21 +26,25 @@ import java.util.Map;
 public class FCMService {
 
     private final UserRepository userRepository;
-
+    private final DutchPayParticipantRepository  dutchPayParticipantRepository;
     /**
      * 더치페이 정산 요청 푸시 알림 전송
      */
-    public void sendDutchPayInviteNotification(String fcmToken, String organizerName, String groupName, Long groupId) {
+    public void sendDutchPayInviteNotification(String fcmToken, String organizerName, String groupName, Long groupId, String organizerId) {
         if (fcmToken == null || fcmToken.trim().isEmpty()) {
             log.warn("FCM 토큰이 비어있어 알림 전송을 건너뜁니다.");
             return;
         }
 
         try {
+            DutchPayParticipant dp = dutchPayParticipantRepository.findByDutchPayGroup_GroupIdAndUser_UserId(groupId, organizerId)
+                .orElseThrow(() -> new SolsolException(SolsolErrorCode.PARTICIPANT_NOT_FOUND));
+
             Map<String, String> data = new HashMap<>();
             data.put("type", "DUTCH_PAY_INVITE");
             data.put("groupId", groupId.toString());
             data.put("groupName", groupName);
+            data.put("amount", dp.getSettlementAmount().toString());
 
             Message message = Message.builder()
                     .setToken(fcmToken)
@@ -156,7 +166,7 @@ public class FCMService {
      * 무효한 FCM 토큰 정리
      */
     @Transactional
-    private void clearInvalidFcmToken(String invalidToken) {
+    public void clearInvalidFcmToken(String invalidToken) {
         try {
             userRepository.findByFcmToken(invalidToken)
                     .ifPresent(user -> {
