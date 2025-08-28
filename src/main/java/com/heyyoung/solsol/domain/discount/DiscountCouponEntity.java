@@ -31,6 +31,10 @@ public class DiscountCouponEntity extends BaseUpdatedCreatedEntity {
         this.user = user;
     }
 
+    public void useCoupon(CouponStatus couponStatus) {
+        this.couponStatus = couponStatus;
+    }
+
     @Builder
     public DiscountCouponEntity(User user, CouponStatus couponStatus, BigDecimal amount) {
         this.user = user;

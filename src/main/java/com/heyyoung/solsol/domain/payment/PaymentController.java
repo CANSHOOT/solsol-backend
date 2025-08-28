@@ -21,11 +21,11 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/v1/payments/{tempId}")
-    public ResponseEntity<CreatePaymentResponse> createPayment(@PathVariable long tempId,
+    @PostMapping("/v1/payments/{paymentId}")
+    public ResponseEntity<CreatePaymentResponse> createPayment(@PathVariable long paymentId,
                                                                @RequestBody CreatePaymentRequest createPaymentRequest,
                                                                @AuthenticationPrincipal String user) {
-        CreatePaymentResponse response = paymentService.createPaymentResponse(user, createPaymentRequest.amount());
+        CreatePaymentResponse response = paymentService.createPaymentResponse(user, createPaymentRequest, paymentId);
         return ResponseEntity.ok(response);
     }
 
