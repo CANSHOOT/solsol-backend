@@ -3,6 +3,7 @@ package com.heyyoung.solsol.domain.payment;
 import com.heyyoung.solsol.domain.payment.dto.CreatePaymentRequest;
 import com.heyyoung.solsol.domain.payment.dto.CreatePaymentResponse;
 import com.heyyoung.solsol.domain.payment.dto.GetPaymentPreviewResponse;
+import com.heyyoung.solsol.domain.payment.dto.GetPaymentsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,4 +30,9 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/v1/payments")
+    public ResponseEntity<GetPaymentsResponse> getPayments(@AuthenticationPrincipal String user) {
+        GetPaymentsResponse response = paymentService.getPayments(user);
+        return ResponseEntity.ok(response);
+    }
 }
