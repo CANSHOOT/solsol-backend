@@ -53,7 +53,8 @@ public class DiscountCouponService {
                                 coupon.getAmount().intValue(),
                                 coupon.getCreatedAt().atZone(ZoneId.systemDefault()).toLocalDate(),
                                 coupon.getCreatedAt().plus(30, ChronoUnit.DAYS)
-                                        .atZone(ZoneId.systemDefault()).toLocalDate()))
+                                        .atZone(ZoneId.systemDefault()).toLocalDate(),
+                                coupon.getCouponType()))
                 .toList();
 
     }
