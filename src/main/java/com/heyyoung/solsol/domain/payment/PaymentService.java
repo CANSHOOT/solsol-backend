@@ -80,14 +80,19 @@ public class PaymentService {
             throw new NotEnoughMoneyException();
         }
 
-        DiscountCouponEntity discountCoupon = discountCouponService
-                .findByUserUserIdAndDiscountCouponIdAndCreatedAtBetweenAndCouponStatus(userId,
-                        createPaymentRequest.discountCouponId());
-
-        discountCoupon.useCoupon(CouponStatus.USED);
-
         PaymentsEntity payment = paymentRepository.findById(paymentId)
                 .orElseThrow(PaymentNotExistException::new);
+
+        if (createPaymentRequest.discountCouponId() != -1) {
+            DiscountCouponEntity discountCoupon = discountCouponService
+                    .findByUserUserIdAndDiscountCouponIdAndCreatedAtBetweenAndCouponStatus(userId,
+                            createPaymentRequest.discountCouponId());
+
+            discountCoupon.useCoupon(CouponStatus.USED);
+            payment.updateAmount(payment.getFinalAmount().subtract(discountCoupon.getAmount()),
+                    payment.getDiscountAmount().add(discountCoupon.getAmount()));
+        }
+
 
         payment.updatePaymentStatus(PaymentStatus.COMPLETED);
         payment.updateApiTransactionId(transferResponse.getREC().getLast().getTransactionUniqueNo());

@@ -57,6 +57,11 @@ public class PaymentsEntity extends BaseUpdatedCreatedEntity {
         this.paymentStatus = paymentStatus;
     }
 
+    public void updateAmount(BigDecimal finalAmount, BigDecimal discountAmount) {
+        this.finalAmount = finalAmount;
+        this.discountAmount = discountAmount;
+    }
+
     @Builder
     public PaymentsEntity(String apiTransactionId, PaymentStatus paymentStatus, String transactionSummary,
                           PaymentMethod paymentMethod, BigDecimal discountRate,
