@@ -6,10 +6,7 @@ import com.heyyoung.solsol.domain.discount.DiscountCouponService;
 import com.heyyoung.solsol.domain.discount.dto.GetDiscountCouponResponse;
 import com.heyyoung.solsol.domain.menu.MenuService;
 import com.heyyoung.solsol.domain.menu.dto.GetMenuResponse;
-import com.heyyoung.solsol.domain.payment.dto.CreatePaymentRequest;
-import com.heyyoung.solsol.domain.payment.dto.CreatePaymentResponse;
-import com.heyyoung.solsol.domain.payment.dto.GetDepartment;
-import com.heyyoung.solsol.domain.payment.dto.GetPaymentPreviewResponse;
+import com.heyyoung.solsol.domain.payment.dto.*;
 import com.heyyoung.solsol.domain.payment.exception.NotEnoughMoneyException;
 import com.heyyoung.solsol.domain.payment.exception.PaymentNotExistException;
 import com.heyyoung.solsol.domain.payment.repository.PaymentRepository;
@@ -101,6 +98,15 @@ public class PaymentService {
             return new CreatePaymentResponse(500, true);
 
         return new CreatePaymentResponse(0, false);
+    }
+
+    public GetPaymentsResponse getPayments(String userId) {
+        List<GetPaymentResponse> payments = paymentRepository.findByUserUserIdAndPaymentStatus(userId, PaymentStatus.COMPLETED)
+                .stream()
+                .map(GetPaymentResponse::from)
+                .toList();
+
+        return new GetPaymentsResponse(payments);
     }
 
     // 할인률 정수로 추출
