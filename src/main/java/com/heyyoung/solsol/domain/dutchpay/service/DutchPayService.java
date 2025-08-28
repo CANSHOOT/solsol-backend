@@ -389,7 +389,7 @@ public class DutchPayService {
         }
 
         receivables.sort(
-                Comparator.comparing(MyReceivableItemResponse::groupId).reversed()
+                Comparator.comparing(MyReceivableItemResponse::groupId)
                         .thenComparing(MyReceivableItemResponse::userName)
         );
 
