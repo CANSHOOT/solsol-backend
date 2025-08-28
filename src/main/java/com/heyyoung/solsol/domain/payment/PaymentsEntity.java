@@ -5,6 +5,7 @@ import com.heyyoung.solsol.domain.account.entity.Account;
 import com.heyyoung.solsol.domain.merchant.MerchantEntity;
 import com.heyyoung.solsol.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,5 +43,29 @@ public class PaymentsEntity extends BaseUpdatedCreatedEntity {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+    private BigDecimal finalAmount;
+
     private String apiTransactionId;
+
+    public void updateApiTransactionId(String apiTransactionId) {
+        this.apiTransactionId = apiTransactionId;
+    }
+
+    public void updatePaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    @Builder
+    public PaymentsEntity(String apiTransactionId, PaymentStatus paymentStatus, String transactionSummary,
+                          PaymentMethod paymentMethod, BigDecimal discountRate,
+                          BigDecimal originalAmount, BigDecimal discountAmount, BigDecimal finalAmount) {
+        this.apiTransactionId = apiTransactionId;
+        this.paymentStatus = paymentStatus;
+        this.transactionSummary = transactionSummary;
+        this.paymentMethod = paymentMethod;
+        this.discountRate = discountRate;
+        this.originalAmount = originalAmount;
+        this.discountAmount = discountAmount;
+        this.finalAmount = finalAmount;
+    }
 }
