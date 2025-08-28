@@ -113,8 +113,7 @@ public class DutchPayService {
                             invitedUser.getFcmToken(),
                             organizer.getName(),
                             dutchPayGroup.getGroupName(),
-                            groupId,
-                            organizerId
+                            groupId
                     );
                     log.info("더치페이 초대 푸시 알림 전송 완료 - UserId: {}, GroupId: {}", userId, groupId);
                 } else {
