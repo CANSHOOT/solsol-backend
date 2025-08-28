@@ -187,7 +187,7 @@ public class DutchPayService {
     @Transactional
     public PaymentResponse sendPayment(Long groupId, SendPaymentRequest request, String userId) {
         DutchPayGroup dutchPayGroup = findDutchPayGroupById(groupId);
-        
+
         // 참여자 확인
         DutchPayParticipant participant = dutchPayParticipantRepository
                 .findByGroupIdAndUserId(groupId, userId)
@@ -201,12 +201,12 @@ public class DutchPayService {
         try {
             User participantUser = findUserById(userId);
             User organizerUser = dutchPayGroup.getOrganizer();
-            
+
             // 참여자와 주최자의 계좌번호 확인
             if (participantUser.getAccountNo() == null || organizerUser.getAccountNo() == null) {
                 throw new RuntimeException("계좌 정보가 없는 사용자입니다.");
             }
-            
+
             // 금융 API를 통한 계좌 이체 (참여자 -> 주최자)
             AccountTransferResponse transferResponse = accountApiService.transferAccount(
                     participantUser.getUserKey(),
@@ -222,12 +222,12 @@ public class DutchPayService {
 
             // 참여자 결제 상태 업데이트
             participant.completePayment(transactionId);
-            
+
             // 이체 후 참여자와 주최자의 잔액 업데이트
             updateUserBalance(participantUser);
             updateUserBalance(organizerUser);
-            
-            log.info("더치페이 송금 완료 - GroupId: {}, UserId: {}, TransactionId: {}", 
+
+            log.info("더치페이 송금 완료 - GroupId: {}, UserId: {}, TransactionId: {}",
                     groupId, userId, transactionId);
 
             // 모든 참여자가 결제 완료했는지 확인
@@ -236,12 +236,12 @@ public class DutchPayService {
             return PaymentResponse.success(transactionId, participant.getSettlementAmount());
 
         } catch (Exception e) {
-            log.error("더치페이 송금 실패 - GroupId: {}, UserId: {}, Error: {}", 
+            log.error("더치페이 송금 실패 - GroupId: {}, UserId: {}, Error: {}",
                     groupId, userId, e.getMessage());
-            
+
             // 참여자 결제 상태를 실패로 업데이트
             participant.failPayment();
-            
+
             return PaymentResponse.failure("송금 처리 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
@@ -256,7 +256,7 @@ public class DutchPayService {
     public List<DutchPayResponse> getDutchPayHistory(String userId, Pageable pageable) {
         // 주최한 더치페이 목록
         List<DutchPayGroup> organizedGroups = dutchPayGroupRepository.findByOrganizerUserId(userId, pageable);
-        
+
         return organizedGroups.stream()
                 .map(DutchPayResponse::from)
                 .collect(Collectors.toList());
@@ -270,7 +270,7 @@ public class DutchPayService {
     @Transactional(readOnly = true)
     public List<ParticipantResponse> getUserParticipations(String userId) {
         List<DutchPayParticipant> participants = dutchPayParticipantRepository.findByUserIdWithGroup(userId);
-        
+
         return participants.stream()
                 .map(ParticipantResponse::from)
                 .collect(Collectors.toList());
@@ -362,7 +362,7 @@ public class DutchPayService {
                             toKoreanStatus(p.getPaymentStatus())
                     );
                 })
-                .sorted(Comparator.comparing(MyPayableItemResponse::groupId).reversed())
+                .sorted(Comparator.comparing(MyPayableItemResponse::groupId))
                 .toList();
 
         // 2) 내가 받을 돈 (내가 organizer인 그룹들의 모든 참가자들)
@@ -389,7 +389,7 @@ public class DutchPayService {
         }
 
         receivables.sort(
-                Comparator.comparing(MyReceivableItemResponse::groupId)
+                Comparator.comparing(MyReceivableItemResponse::groupId).reversed()
                         .thenComparing(MyReceivableItemResponse::userName)
         );
 
