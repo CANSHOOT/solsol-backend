@@ -363,7 +363,7 @@ public class DutchPayService {
                     );
                 })
                 .sorted(Comparator.comparing(MyPayableItemResponse::groupId))
-                .toList();
+                .toList().reversed();
 
         // 2) 내가 받을 돈 (내가 organizer인 그룹들의 모든 참가자들)
         List<DutchPayGroup> myGroups = findGroupsByOrganizer(userId);
@@ -389,7 +389,7 @@ public class DutchPayService {
         }
 
         receivables.sort(
-                Comparator.comparing(MyReceivableItemResponse::groupId)
+                Comparator.comparing(MyReceivableItemResponse::groupId).reversed()
                         .thenComparing(MyReceivableItemResponse::userName)
         );
 
