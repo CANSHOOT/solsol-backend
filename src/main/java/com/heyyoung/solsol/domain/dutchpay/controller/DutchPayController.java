@@ -38,6 +38,20 @@ public class DutchPayController {
     }
 
     /**
+     * 더치페이 생성
+     * @param request 더치페이 생성 요청
+     * @return 생성된 더치페이 정보
+     */
+    @PostMapping("/game/{organizerId}")
+    public ResponseEntity<DutchPayResponse> createDutchPay(
+            @RequestBody CreateDutchPayRequest request,
+            @PathVariable String organizerId
+    ) {
+        DutchPayResponse response = dutchPayService.createDutchPay(request, organizerId);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * 더치페이 조회
      * @param groupId 더치페이 그룹 ID
      * @return 더치페이 상세 정보

@@ -13,4 +13,7 @@ public interface DiscountCouponRepository extends JpaRepository<DiscountCouponEn
 
     List<DiscountCouponEntity> findByUserUserIdAndCouponStatusAndCreatedAtBetween(String userId, CouponStatus couponStatus,
                                                                                   Instant from, Instant to);
+
+    Optional<DiscountCouponEntity> findByUserUserIdAndDiscountCouponIdAndCreatedAtBetweenAndCouponStatus(String userId, long discountCouponId,
+                                                                                                         Instant from, Instant to, CouponStatus couponStatus);
 }

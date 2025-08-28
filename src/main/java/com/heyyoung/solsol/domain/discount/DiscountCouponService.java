@@ -3,6 +3,7 @@ package com.heyyoung.solsol.domain.discount;
 import com.heyyoung.solsol.domain.coupon_daily_cap.CouponDailyCapService;
 import com.heyyoung.solsol.domain.discount.dto.GetDiscountCouponResponse;
 import com.heyyoung.solsol.domain.discount.dto.GetDiscountCouponsResponse;
+import com.heyyoung.solsol.domain.discount.exception.DiscountCouponNotExistException;
 import com.heyyoung.solsol.domain.discount.repository.DiscountCouponRepository;
 import com.heyyoung.solsol.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,12 @@ public class DiscountCouponService {
     }
 
     public GetDiscountCouponsResponse getDiscountCoupons(String userId) {
-        List<GetDiscountCouponResponse> coupons = discountCouponRepository
+        List<GetDiscountCouponResponse> coupons = getDiscountCouponsForPreview(userId);
+        return new GetDiscountCouponsResponse(coupons);
+    }
+
+    public List<GetDiscountCouponResponse> getDiscountCouponsForPreview(String userId) {
+        return discountCouponRepository
                 .findByUserUserIdAndCouponStatusAndCreatedAtBetween(userId, CouponStatus.AVAILABLE,
                         Instant.now().minus(30, ChronoUnit.DAYS), Instant.now())
                 .stream()
@@ -47,10 +53,17 @@ public class DiscountCouponService {
                                 coupon.getAmount().intValue(),
                                 coupon.getCreatedAt().atZone(ZoneId.systemDefault()).toLocalDate(),
                                 coupon.getCreatedAt().plus(30, ChronoUnit.DAYS)
-                                        .atZone(ZoneId.systemDefault()).toLocalDate()))
+                                        .atZone(ZoneId.systemDefault()).toLocalDate(),
+                                coupon.getCouponType()))
                 .toList();
 
-        return new GetDiscountCouponsResponse(coupons);
+    }
+
+    public DiscountCouponEntity findByUserUserIdAndDiscountCouponIdAndCreatedAtBetweenAndCouponStatus(String userId,
+                                                                                                      long discountCouponId) {
+        return discountCouponRepository.findByUserUserIdAndDiscountCouponIdAndCreatedAtBetweenAndCouponStatus(userId, discountCouponId,
+                Instant.now().minus(30, ChronoUnit.DAYS), Instant.now(), CouponStatus.AVAILABLE)
+                .orElseThrow(DiscountCouponNotExistException::new);
     }
 }
 

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
@@ -25,10 +26,18 @@ public class DiscountCouponEntity extends BaseUpdatedCreatedEntity {
     @Enumerated(EnumType.STRING)
     private CouponStatus couponStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Setter
+    private CouponType couponType;
+
     private BigDecimal amount;
 
     public void setOwner(User user) {
         this.user = user;
+    }
+
+    public void useCoupon(CouponStatus couponStatus) {
+        this.couponStatus = couponStatus;
     }
 
     @Builder
