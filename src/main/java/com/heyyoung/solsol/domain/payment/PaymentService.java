@@ -91,6 +91,7 @@ public class PaymentService {
 
         payment.updatePaymentStatus(PaymentStatus.COMPLETED);
         payment.updateApiTransactionId(transferResponse.getREC().getLast().getTransactionUniqueNo());
+        payment.setUser(user);
 
         // 계좌 이체 완료 시 랜덤으로 500원 쿠폰 줌
         boolean winning = ThreadLocalRandom.current().nextInt(30) <= 5;
