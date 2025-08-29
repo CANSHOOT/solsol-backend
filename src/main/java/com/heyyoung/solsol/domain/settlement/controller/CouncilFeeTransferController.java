@@ -80,7 +80,7 @@ public class CouncilFeeTransferController {
                 DEPT_ACCOUNT_NO,
                 depositSummary,
                 feeAmount.toString(),
-                cmd.withdrawalAccountNo(),
+                accountNo,
                 withdrawalSummary
         );
 
