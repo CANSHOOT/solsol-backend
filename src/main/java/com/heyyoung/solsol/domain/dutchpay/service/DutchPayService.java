@@ -114,7 +114,7 @@ public class DutchPayService {
                             organizer.getName(),
                             dutchPayGroup.getGroupName(),
                             groupId,
-                            organizerId
+                            invitedUser.getUserId()
                     );
                     log.info("더치페이 초대 푸시 알림 전송 완료 - UserId: {}, GroupId: {}", userId, groupId);
                 } else {
