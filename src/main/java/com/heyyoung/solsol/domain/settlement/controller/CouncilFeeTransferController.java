@@ -52,14 +52,14 @@ public class CouncilFeeTransferController {
 
         String accountNo = councilFeeTransferService.getAccountNoByUser(userId);
 
-        // 출금 계좌 검증
-        if (!accountNo.equals(cmd.withdrawalAccountNo())) {
-            log.warn("계좌 불일치: 요청 계좌={}, 실제 계좌={}",
-                    cmd.withdrawalAccountNo(), accountNo);
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body("요청한 출금 계좌가 사용자 계좌와 일치하지 않습니다.");
-        }
+//        // 출금 계좌 검증
+//        if (!accountNo.equals(cmd.withdrawalAccountNo())) {
+//            log.warn("계좌 불일치: 요청 계좌={}, 실제 계좌={}",
+//                    cmd.withdrawalAccountNo(), accountNo);
+//            return ResponseEntity
+//                    .status(HttpStatus.FORBIDDEN)
+//                    .body("요청한 출금 계좌가 사용자 계좌와 일치하지 않습니다.");
+//        }
 
         System.out.println(cmd.feeId());
         // 회비 금액 조회
