@@ -43,7 +43,7 @@ public class FCMService {
             Map<String, String> data = new HashMap<>();
             data.put("type", "DUTCH_PAY_INVITE");
             data.put("groupId", groupId.toString());
-            data.put("groupName", groupName);
+            data.put("groupName", organizerName);
             data.put("amount", dp.getSettlementAmount().toString());
 
             Message message = Message.builder()
