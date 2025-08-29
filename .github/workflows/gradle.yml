@@ -90,10 +90,6 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd /home/ubuntu/solsol/build/libs
-            sudo pkill -f 'solsol-0.0.1-SNAPSHOT.jar'
             export GOOGLE_APPLICATION_CREDENTIALS="/home/ubuntu/firebase-key.json"
-            nohup java -jar /home/ubuntu/solsol/build/libs/solsol-0.0.1-SNAPSHOT.jar \
-            --server.port=8081 \
-            --spring.profiles.active=profile2 \
-            --jasypt.encryptor.password=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }} \
-            > app.log 2>&1 &
+            sudo ps -ef | grep -v grep | grep "java -jar solsol" | awk '{print $2}' | xargs -r kill -15
+            sudo nohup java -jar solsol-0.0.1-SNAPSHOT.jar --server.port=8081 --spring.profiles.active=profile2 --jasypt.encryptor.password=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }} >> ./solsol.log 2>&1 &
