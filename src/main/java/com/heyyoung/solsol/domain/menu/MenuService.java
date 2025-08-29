@@ -19,7 +19,7 @@ public class MenuService {
     }
 
     public List<GetMenuResponse> getPayMenus() {
-        return menuRepository.findAllById(List.of(1, 2, 3))
+        return menuRepository.findAllById(List.of(1))
                 .stream()
                 .map(GetMenuResponse::from)
                 .toList();
