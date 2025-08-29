@@ -37,7 +37,7 @@ public class FCMService {
         }
 
         try {
-            DutchPayParticipant dp = dutchPayParticipantRepository.findByDutchPayGroup_GroupIdAndUser_UserId(groupId, organizerName)
+            DutchPayParticipant dp = dutchPayParticipantRepository.findByDutchPayGroup_GroupIdAndUser_UserId(groupId, userId)
                     .orElseThrow(() -> new SolsolException(SolsolErrorCode.PARTICIPANT_NOT_FOUND));
             log.info("!!!!!:" + dp.toString());
             Map<String, String> data = new HashMap<>();
