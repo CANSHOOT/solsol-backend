@@ -101,32 +101,32 @@ public class DutchPayService {
         DutchPayGroup dutchPayGroup = findDutchPayGroupById(groupId);
         User organizer = findUserById(organizerId);
 
-        log.info("더치페이 초대 시작 - GroupId: {}, 초대할 사용자 수: {}", groupId, inviteUserIds.size());
-
-        for (String userId : inviteUserIds) {
-            try {
-                User invitedUser = findUserById(userId);
-
-                // 사용자의 FCM 토큰이 있는 경우에만 푸시 알림 전송
-                if (invitedUser.hasFcmToken()) {
-                    fcmService.sendDutchPayInviteNotification(
-                            invitedUser.getFcmToken(),
-                            organizer.getName(),
-                            dutchPayGroup.getGroupName(),
-                            groupId,
-                            invitedUser.getUserId()
-                    );
-                    log.info("더치페이 초대 푸시 알림 전송 완료 - UserId: {}, GroupId: {}", userId, groupId);
-                } else {
-                    log.warn("FCM 토큰이 없는 사용자 - UserId: {}", userId);
-                }
-            } catch (Exception e) {
-                log.error("더치페이 초대 푸시 알림 전송 실패 - UserId: {}, Error: {}", userId, e.getMessage());
-                // 한 명의 알림 실패가 전체 프로세스를 중단시키지 않도록 continue
-            }
-        }
-
-        log.info("더치페이 초대 프로세스 완료 - GroupId: {}", groupId);
+//        log.info("더치페이 초대 시작 - GroupId: {}, 초대할 사용자 수: {}", groupId, inviteUserIds.size());
+//
+//        for (String userId : inviteUserIds) {
+//            try {
+//                User invitedUser = findUserById(userId);
+//
+//                // 사용자의 FCM 토큰이 있는 경우에만 푸시 알림 전송
+//                if (invitedUser.hasFcmToken()) {
+//                    fcmService.sendDutchPayInviteNotification(
+//                            invitedUser.getFcmToken(),
+//                            organizer.getName(),
+//                            dutchPayGroup.getGroupName(),
+//                            groupId,
+//                            invitedUser.getUserId()
+//                    );
+//                    log.info("더치페이 초대 푸시 알림 전송 완료 - UserId: {}, GroupId: {}", userId, groupId);
+//                } else {
+//                    log.warn("FCM 토큰이 없는 사용자 - UserId: {}", userId);
+//                }
+//            } catch (Exception e) {
+//                log.error("더치페이 초대 푸시 알림 전송 실패 - UserId: {}, Error: {}", userId, e.getMessage());
+//                // 한 명의 알림 실패가 전체 프로세스를 중단시키지 않도록 continue
+//            }
+//        }
+//
+//        log.info("더치페이 초대 프로세스 완료 - GroupId: {}", groupId);
     }
 
     /**
@@ -174,6 +174,31 @@ public class DutchPayService {
 
         DutchPayParticipant savedParticipant = dutchPayParticipantRepository.save(participant);
         log.info("더치페이 참여 완료 - GroupId: {}, UserId: {}", groupId, userId);
+
+        log.info("더치페이 초대 시작 - GroupId: {}, 초대할 사용자: {}", groupId, userId);
+
+        try {
+            User invitedUser = findUserById(userId);
+
+            // 사용자의 FCM 토큰이 있는 경우에만 푸시 알림 전송
+            if (invitedUser.hasFcmToken()) {
+                fcmService.sendDutchPayInviteNotification(
+                        invitedUser.getFcmToken(),
+                        dutchPayGroup.getOrganizer().getName(),
+                        dutchPayGroup.getGroupName(),
+                        groupId,
+                        invitedUser.getUserId()
+                );
+                log.info("더치페이 초대 푸시 알림 전송 완료 - UserId: {}, GroupId: {}", userId, groupId);
+            } else {
+                log.warn("FCM 토큰이 없는 사용자 - UserId: {}", userId);
+            }
+        } catch (Exception e) {
+            log.error("더치페이 초대 푸시 알림 전송 실패 - UserId: {}, Error: {}", userId, e.getMessage());
+            // 한 명의 알림 실패가 전체 프로세스를 중단시키지 않도록 continue
+        }
+
+        log.info("더치페이 초대 프로세스 완료 - GroupId: {}", groupId);
 
         return ParticipantResponse.from(savedParticipant);
     }
