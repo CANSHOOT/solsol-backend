@@ -2,6 +2,7 @@ package com.heyyoung.solsol.domain.user.service;
 
 import com.heyyoung.solsol.common.exception.app.SolsolErrorCode;
 import com.heyyoung.solsol.common.exception.app.SolsolException;
+import com.heyyoung.solsol.domain.user.dto.GetAccountResponse;
 import com.heyyoung.solsol.domain.user.dto.UserDto;
 import com.heyyoung.solsol.domain.user.entity.User;
 import com.heyyoung.solsol.domain.user.repository.UserRepository;
@@ -57,5 +58,12 @@ public class UserService {
                 .orElseThrow(() -> new SolsolException(SolsolErrorCode.USER_NOT_FOUND));
 
         return UserDto.from(user);
+    }
+
+    public GetAccountResponse  getAccountByUserId(String userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new SolsolException(SolsolErrorCode.USER_NOT_FOUND));
+
+        return new GetAccountResponse(user.getAccountNo(), user.getAccountBalance().intValue());
     }
 }

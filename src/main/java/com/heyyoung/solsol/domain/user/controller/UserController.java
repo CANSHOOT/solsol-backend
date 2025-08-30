@@ -2,6 +2,7 @@ package com.heyyoung.solsol.domain.user.controller;
 
 import com.heyyoung.solsol.common.exception.app.SolsolErrorCode;
 import com.heyyoung.solsol.common.exception.app.SolsolException;
+import com.heyyoung.solsol.domain.user.dto.GetAccountResponse;
 import com.heyyoung.solsol.domain.user.dto.UpdateFcmTokenRequest;
 import com.heyyoung.solsol.domain.user.dto.UserDto;
 import com.heyyoung.solsol.domain.user.entity.User;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +31,7 @@ public class UserController {
 
     /**
      * 사용자 검색 (학번/이름)
+     *
      * @param query 검색어 (학번 또는 이름)
      * @param limit 조회 개수 제한
      * @return 검색된 사용자 목록
@@ -44,6 +47,7 @@ public class UserController {
 
     /**
      * 사용자 상세 정보 조회
+     *
      * @param userId 사용자 ID
      * @return 사용자 상세 정보
      */
@@ -55,8 +59,9 @@ public class UserController {
 
     /**
      * FCM 토큰 업데이트
+     *
      * @param request FCM 토큰 업데이트 요청
-     * @param auth 인증 정보
+     * @param auth    인증 정보
      * @return 성공 응답
      */
     @PostMapping("/fcm-token")
@@ -74,4 +79,12 @@ public class UserController {
         log.info("FCM 토큰 업데이트 완료 - UserId: {}", userId);
         return ResponseEntity.ok("FCM 토큰이 업데이트되었습니다.");
     }
+
+    @GetMapping("/account")
+    public ResponseEntity<GetAccountResponse> getUserByEmail(@AuthenticationPrincipal String userId) {
+        GetAccountResponse response = userService.getAccountByUserId(userId);
+        return ResponseEntity.ok(response);
+    }
+
+
 }
